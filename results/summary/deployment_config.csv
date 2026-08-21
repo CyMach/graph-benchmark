@@ -1,0 +1,6 @@
+platform,provider,plan_tier,cpu,memory,storage,region,version,ha,replication,notes
+cognodb,CognoDB Cloud,Free,burst to 0.5 vCPU,512 MB,1 GiB,not disclosed,not disclosed,not disclosed,not disclosed,
+neo4j_aura,Google Cloud,AuraDB Free,vCPU,1 GB,2 GB,not disclosed,not disclosed,not disclosed,not disclosed,
+memgraph,Memgraph Cloud,Free,vCPU,2 GB,14 GB,not disclosed,not disclosed,not disclosed,not disclosed,
+falkordb,AWS,FalkorDB Free,vCPU,100 MB,100 MB,ap-south-1,v4.20.1,disabled,disabled,
+arangodb,ArangoGraph Insights Platform,Free,VCPU,1.02 GB,4 GiB,not disclosed,3.12.10-1,not disclosed,not disclosed,

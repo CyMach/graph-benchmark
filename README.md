@@ -1,6 +1,6 @@
 # Graph Database Benchmark
 
-## Executive Summary
+## Summary
 
 This project benchmarks five managed graph-database platforms using a common Mushroom graph dataset and a standardized workload suite:
 

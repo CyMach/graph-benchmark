@@ -1,0 +1,108 @@
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass(frozen=True)
+class Workload:
+    name: str
+    query: str
+    parameters: dict[str, Any]
+
+
+# IMPORTANT:
+# These workloads are the canonical logical workloads.
+# Neo4j and CognoDB must execute these same queries.
+#
+# The benchmark dataset contains mushroom IDs 1..30000.
+# Therefore we use ID 1 rather than the old ID 49774.
+
+WORKLOADS = [
+    Workload(
+        name="1_hop_habitat",
+        query="""
+        MATCH (m:Mushroom {id: $id})
+              -[:IN_HABITAT]->
+              (h:Habitat)
+        RETURN h.value AS habitat
+        """,
+        parameters={"id": 1},
+    ),
+
+    Workload(
+        name="2_hop_shared_stem_root",
+        query="""
+        MATCH (m:Mushroom {id: $id})
+              -[:HAS_STEM_ROOT]->
+              (r:StemRoot)
+              <-[:HAS_STEM_ROOT]-
+              (other:Mushroom)
+        WHERE other.id <> m.id
+        RETURN other.id AS mushroom_id
+        """,
+        parameters={"id": 1},
+    ),
+
+    Workload(
+        name="3_hop_stem_root_season",
+        query="""
+        MATCH (m:Mushroom {id: $id})
+              -[:HAS_STEM_ROOT]->
+              (r:StemRoot)
+              <-[:HAS_STEM_ROOT]-
+              (other:Mushroom)
+              -[:IN_SEASON]->
+              (s:Season)
+        WHERE other.id <> m.id
+        RETURN other.id AS mushroom_id,
+               s.value AS season
+        """,
+        parameters={"id": 1},
+    ),
+
+    Workload(
+        name="point_lookup",
+        query="""
+        MATCH (m:Mushroom {id: $id})
+        RETURN m.id AS id,
+               m.class AS class,
+               m.cap_diameter AS cap_diameter,
+               m.stem_height AS stem_height,
+               m.stem_width AS stem_width
+        """,
+        parameters={"id": 1},
+    ),
+
+    Workload(
+        name="indexed_habitat_lookup",
+        query="""
+        MATCH (h:Habitat {value: $value})
+        RETURN h.value AS habitat
+        """,
+        parameters={"value": "d"},
+    ),
+
+    Workload(
+        name="aggregation",
+        query="""
+        MATCH (m:Mushroom)
+        RETURN m.class AS class,
+               count(*) AS count
+        ORDER BY class
+        """,
+        parameters={},
+    ),
+
+    Workload(
+        name="mixed_read_write",
+        query="""
+        MATCH (m:Mushroom {id: $id})
+        SET m.benchmark_touch = $value
+        RETURN m.id AS id,
+               m.benchmark_touch AS value
+        """,
+        parameters={
+            "id": 1,
+            "value": "benchmark",
+        },
+    ),
+]
